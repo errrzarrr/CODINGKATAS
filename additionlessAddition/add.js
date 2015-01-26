@@ -44,26 +44,26 @@ function convertValuesToNumbersAndTransformsToArray(){
 			     xBinaryArray +"\n "+ yBinaryArray);
 }
 
-function zeropadIfValuesHaveDifferentLength(){
-	while (xBinaryArray.length > yBinaryArray.length) 
-		yBinaryArray.unshift(0);
+function zeropadIfValuesHaveDifferentLength(a, b){
+	while (a.length > b.length) 
+		b.unshift(0);
 	
-	while (yBinaryArray.length > xBinaryArray.length)
-		xBinaryArray.unshift(0);
+	while (b.length > a.length)
+		a.unshift(0);
 
 	console.log("Zero padding if neccesary\n "+
-				 xBinaryArray +"\n "+ yBinaryArray);
+				 a +"\n "+ b);
 }
 
-function addByXOR(){
-	for(i = 0; i < xBinaryArray.length; i++)
-		sumArrayByXOR[i] = xBinaryArray[i] ^ yBinaryArray[i];
-	sumArrayByXOR.unshift( 0 );
+function addByXOR(a, b){
+	for(i = 0; i < a.length; i++)
+		sumArrayByXOR[i] = a[i] ^ b[i];
+	sumArrayByXOR.unshift(0);
 }
 
-function carryByAND(){
-	for(i = 0; i < xBinaryArray.length; i++)
-		carryArrayByAND[i] = xBinaryArray[i] & yBinaryArray[i];
+function carryByAND(a, b){
+	for(i = 0; i < a.length; i++)
+		carryArrayByAND[i] = a[i] & b[i];
 
 	carryArrayByAND.reverse();
 	carryArrayByAND.unshift(0);
@@ -76,17 +76,19 @@ function add(x, y){
 	convertToBinary();
 	convertValuesToNumbersAndTransformsToArray();
 
-	zeropadIfValuesHaveDifferentLength();
+	zeropadIfValuesHaveDifferentLength(xBinaryArray, yBinaryArray);
 
-	addByXOR();
-	carryByAND();
+	addByXOR(xBinaryArray, yBinaryArray);
+	carryByAND(xBinaryArray, yBinaryArray);
 
+	//If any 1-bit found on carry, then repeat addition 
 	for(i = 0; i < carryArrayByAND.length; i++){
 		if(carryArrayByAND[i] === 1){
-			console.log("TELL IF THERE'S ANY CARRY: Carry bit found");
-			
+			console.log(i + ": TELL IF THERE'S ANY CARRY: Carry bit found");
+			zeropadIfValuesHaveDifferentLength(sumArrayByXOR, carryArrayByAND);
+			addByXOR(a, b);
+			carryByAND(a, b);
+			break;
 		}
-			
 	}
-
 }
