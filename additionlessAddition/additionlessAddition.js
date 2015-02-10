@@ -5,9 +5,20 @@ runBitLeft = function(a) {
 	a.unshift(0);
 	a.reverse();
 
-	console.log("run one bit to the left on carry");
-
 	return a;
+}
+
+function convertBackToDecimalInteger(a) {
+	decimalInteger = "";
+	
+	for(i = 0; i < a.length; i++) {
+		decimalInteger += a[i];
+	}
+
+	decimalInteger = decimalInteger.toString();
+	decimalInteger = parseInt(decimalInteger, 2);
+
+	return decimalInteger;
 }
 
 function turnValueToPositiveIfNegative(a) {
@@ -22,13 +33,13 @@ function turnValueToPositiveIfNegative(a) {
 	return positiveValue;
 }
 
-convertToBinary = function(a) {
+function convertToBinary(a) {
 	aBinary = a.toString(2);
 	console.log("Converting " +a+ " to Binary equivalent: " + aBinary);		
 	return aBinary;
 }
 
-convertValueToNumberAndTransformToArray = function(a) {
+function convertValueToNumberAndTransformToArray(a) {
 	numbersArray = [];
 	
 	for(i = 0; i < a.length; i++)
@@ -55,10 +66,13 @@ function zeropadIfValuesHaveDifferentLength(a, b) {
 function addByXOR(a, b) {
 	sumArrayByXOR = [];
 
-	for(i = 0; i < a.length; i++)
-		sumArrayByXOR[i] = a[i] ^ b[i];
-	sumArrayByXOR.unshift(0);
- 
+	for (i = 0; i < a.length; i++) {
+
+		sumArrayByXOR[i] = a[i] ^ b[i];  
+	}
+
+	// sumArrayByXOR.unshift(0);
+
 	console.log("Sum by XOR:\n\t" + sumArrayByXOR);
 	return sumArrayByXOR;
 }
@@ -66,12 +80,13 @@ function addByXOR(a, b) {
 function carryByAND(a, b) {
 	carryArrayByAND = [];
 
-	for(i = 0; i < a.length; i++)
+	for(i = 0; i < a.length; i++) {
 		carryArrayByAND[i] = a[i] & b[i];
+	}
 
 	carryArrayByAND = runBitLeft(carryArrayByAND);
 
-	console.log("Carry:\n\t" + 
+	console.log("Carry (and run left):\n\t" + 
 				carryArrayByAND);
 
 	return carryArrayByAND;
@@ -82,26 +97,16 @@ function verifyCarry(a) {
 	for(i = 0; i < a.length; i++){
 		if(a[i] === 1){
 			carryExists = true;
+			console.log("carry bit found");
 			break;
 		}
 		carryExists = false;
+		console.log("no or no more carry bits found");
 	}
 }
 
-function convertBackToDecimalInteger(a) {
-	decimalInteger = "";
-	
-	for(i = 0; i < a.length; i++)
-		decimalInteger += a[i];
-
-	decimalInteger = decimalInteger.toString();
-	decimalInteger = parseInt(decimalInteger, 2);
-
-	return decimalInteger;
-}
-
 function add(x, y){
-	addition = 0;	
+	addition = 0;
 
 	x = turnValueToPositiveIfNegative(x);
 	y = turnValueToPositiveIfNegative(y);
@@ -117,15 +122,23 @@ function add(x, y){
 	addition = addByXOR(x, y);
 	carry = carryByAND(x, y);
 
-	verifyCarry(carry);	
+	verifyCarry(carry);
 
 	while(carryExists) {
-		zeropadIfValuesHaveDifferentLength(x, y);
+		zeropadIfValuesHaveDifferentLength(addition, carry);
+		
+		oldAddition = addition;
+		oldCarry = carry;
+		
+		addition = addByXOR(oldAddition, oldCarry);
+		carry = carryByAND(oldAddition, oldCarry);
 
-		addition = addByXOR(addition, carry);
-		carry = carryByAND(addition, carry);
-
-		verifyCarry(carry);	
+		verifyCarry(carry);
 	}
+
+	addition = convertBackToDecimalInteger(addition);
+	console.log("Additionless Addition:"); 
+	console.log( "%c\t\t" +addition, 
+		"background: #FFF; color: #3A2");
 
 }
